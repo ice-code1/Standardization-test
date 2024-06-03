@@ -52,6 +52,10 @@ app.use(express.json());
 
 app.use("/api/users",userRoutes)
 
+app.get('/', (req, res) => {
+  res.send('api deployed');
+})
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
  // useNewUrlParser: true,
