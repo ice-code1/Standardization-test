@@ -1,9 +1,9 @@
-const express = require("express");
-const speakeasy = require("speakeasy");
-const uuid = require("uuid");
-const mongoose = require("mongoose");
-const User = require("../models/UserModels");
-const dotenv = require("dotenv");
+const express = require("express")
+const speakeasy = require("speakeasy")
+const uuid = require("uuid")
+const mongoose = require("mongoose")
+const User = require("../models/UserModels")
+const dotenv = require("dotenv")
 const crypto = require('crypto')
 const UserServices = require("../services/UserServices")
 const jwt = require('jsonwebtoken')
@@ -13,7 +13,7 @@ const ImageModels = require("../models/ImageModels")
 const nodemailer = require("nodemailer")
 const fs = require("fs").promises
 
-dotenv.config();
+dotenv.config()
 
 const transporter = nodemailer.createTransport({
   service:"gmail",
@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.USER,
     pass: process.env.PASSWORD,
   },
-});
+})
 
 
 
@@ -35,25 +35,25 @@ class UserController{
         try {
             const id = uuid.v4()
             const {email} = req.body
-            const secretKey = crypto.randomBytes(32);
+            const secretKey = crypto.randomBytes(32)
             const hash = crypto.createHash('sha256').update(secretKey).digest('hex')
             
             const newUser = await UserServices.create(req.body)
             newUser.id = uuid.v4()
             //newUser.temp_secretKey = secretKey
              
-            await newUser.save();
-            console.log(`User registered with ID: ${id}, Secret: ${secretKey.toString('hex')}`);
+            await newUser.save()
+            console.log(`User registered with ID: ${id}, Secret: ${secretKey.toString('hex')}`)
             res.status(201).json({
                 success:true,
                 message:"user registered successfully",
                 data:{ id, temp_secretKey: secretKey.toString('hex') }
-            });
+            })
           } catch (error) {
-            console.log(error);
+            console.log(error)
             res.status(500).json({ 
                 success:false,
-                message: "Problem generating secret" });
+                message: "Problem generating secret" })
           }
       }
 
@@ -88,7 +88,7 @@ class UserController{
                   address:process.env.USER
                 },
                 to:[user.email],
-                subject:"Login Token",
+                subject:"5m",
                 text:`Your token is ${token}`
               }
               
@@ -162,43 +162,43 @@ class UserController{
     async userUpload(req,res){
  
       
-      const filePath = req.file?.path;
-    const filename = req.file?.originalname;
-    const { email } = req.body; // Extract email from request body
+      const filePath = req.file?.path
+    const filename = req.file?.originalname
+    const { email } = req.body
 
   if (!email || !filePath || !filename) {
-    return res.status(400).json({ error: 'Email and file are required' });
+    return res.status(400).json({ error: 'Email and file are required' })
   }
 
   try {
-    console.log('Reading file:', filePath);
-    const fileContent = await fs.readFile(filePath);
+    console.log('Reading file:', filePath)
+    const fileContent = await fs.readFile(filePath)
 
-    console.log('File read successfully. Converting to base64.');
-    const base64Content = fileContent.toString('base64');
+    console.log('File read successfully. Converting to base64.')
+    const base64Content = fileContent.toString('base64')
 
-    console.log('Finding user with email:', email);
-    const user = await User.findOne({ email: email });
+    console.log('Finding user with email:', email)
+    const user = await User.findOne({ email: email })
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'User not found' })
     }
 
-    console.log('Updating user image.');
-    user.image = { filename, content: base64Content };
-    await user.save();
+    console.log('Updating user image.')
+    user.image = { filename, content: base64Content }
+    await user.save()
 
-    console.log('Deleting file from system:', filePath);
-    await fs.unlink(filePath);
+    console.log('Deleting file from system:', filePath)
+    await fs.unlink(filePath)
 
     res.status(200).json({ message: `Image for user with email ${email} uploaded, stored as base64, and deleted from the system.`,
     data: {
       filename: filename,
       content: base64Content
     }
-   });
+   })
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred while processing the file.' });
+    console.error('Error:', error)
+    res.status(500).json({ error: 'An error occurred while processing the file.' })
   }
   }
 
@@ -212,7 +212,7 @@ class UserController{
     const user = await User.findOne({ email: email })
 
     if (!user || !user.image) {
-      return res.status(404).json({ success: false, message: 'User or image not found' });
+      return res.status(404).json({ success: false, message: 'User or image not found' })
   }
   
     res.status(200).json({message:"success",
