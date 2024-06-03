@@ -46,6 +46,7 @@ const app = express();
 
 
 
+
 app.use(express.urlencoded({extended:false}))
 app.use(express.json());
 
@@ -58,6 +59,12 @@ mongoose.connect(process.env.MONGODB_URI, {
  // useCreateIndex: true,
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err))
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log('Connected to the database');
+});
 
 const Port = process.env.PORT || 5000;
 

@@ -9,8 +9,15 @@ class UserServices{
         return await UserModels.findOne(filter)
     }
 
-    
+    async findAll(filter){
+        return await UserModels.find(filter)
+    }
 
+    async findId(filter){
+        return await UserModels.findById(filter)
+    }
+    
+    
 }
 
 module.exports = new UserServices()
